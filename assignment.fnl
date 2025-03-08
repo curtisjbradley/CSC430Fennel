@@ -27,7 +27,23 @@
   (case args
     [{:type :numV :val a} {:type :numV :val b}] {:type :boolV :val (= a b)}
     _ (error "Bad input to primeq")))
+(fn primprintln [args]
+  (case args
+    [{:type _ :val a}] (print a)
+    _ (error "Bad input to primprintln"))
+  {:type :nullV})
 
+(fn primseq [args]
+   (. args (length args)))
+
+(fn strcat [args]
+ (accumulate [str "" i val (ipairs args)]
+  (case val
+   [{:type :strV :val v} (.. str v)
+   [{:type :numV :val n} (.. str n)
+   [{:type :boolV :val false} (.. str "false")
+   [:type :boolV :val true] (.. str "true")
+   _ (.. str "#<invalid-type>")]]])))
 (fn primerror [args]
   (case args
     [{:type :strV :val a}] (error a)
@@ -40,6 +56,9 @@
    :/ {:type :primV :val primdiv}
    :<= {:type :primV :val primleq}
    := {:type :primV :val primeq}
+   :println {:type :primV :val primprintln}
+   :seq {:type :primV :val primseq}
+   :++ {:type :primV :val strcat}
    :error {:type :primV :val primerror}})
 
 (fn extend-env [params args env]
@@ -75,6 +94,7 @@
     {:type :numV :val v} v
     {:type :strV :val s} s
     {:type :boolV :val v} v
+    {:type :nullV} "Null Value"
     nil "Null"
     _ (. val :type)))
 
@@ -83,7 +103,13 @@
 (print (serialize (interp {:type :appC :func {:type :idC :val :+} :args [{:type :numC :val 5} {:type :numC :val 3}]} top-env)))
 (print (serialize (interp {:type :condC :cond {:type :appC :func {:type :idC :val :<=} 
  :args [{:type :appC :func {:type :idC :val :+} :args [{:type :numC :val 5} {:type :numC :val 3}]} {:type :numC :val 2}]}
- :onTrue {:type :strC :val "Hello World"} :onFalse {:type :boolC :val false}}  top-env)))
+ :onTrue {:type :strC :val "Hello World"} :onFalse {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "This is a test using println"}]}}  top-env)))
 (print (serialize (interp {:type :condC :cond {:type :appC :func {:type :idC :val :<=} 
  :args [{:type :appC :func {:type :idC :val :*} :args [{:type :numC :val 10} {:type :numC :val 3}]} {:type :numC :val 50}]}
  :onTrue {:type :strC :val "Hello World"} :onFalse {:type :boolC :val false}}  top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :seq} :args [
+  {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "Printing line 1"}]}
+  {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "Printing line 2"}]}
+  {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "Printing line 3"}]}
+  {:type :numC :val 3.14}
+ ]} top-env)))
