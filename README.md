@@ -4,7 +4,7 @@ This is a project for CSC430. We created and updated a programming languaguge na
 
 ## How to Run
 
-Make sure to have both Lua and Fennel installed. You can go here https://fennel-lang.org/setup. If you have homebrew, can you just run:
+Make sure to have both Lua and Fennel installed. You can go here https://fennel-lang.org/setup. If you have homebrew, you can just run:
 
 ```
 brew install fennel
