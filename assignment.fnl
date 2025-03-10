@@ -39,11 +39,13 @@
 (fn strcat [args]
  (accumulate [str "" i val (ipairs args)]
   (case val
-   [{:type :strV :val v} (.. str v)
-   [{:type :numV :val n} (.. str n)
-   [{:type :boolV :val false} (.. str "false")
-   [:type :boolV :val true] (.. str "true")
-   _ (.. str "#<invalid-type>")]]])))
+   [{:type :strV :val v}] (.. str v)
+   [{:type :numV :val n}] (.. str n)
+   [{:type :boolV :val false}] (.. str "false")
+   [{:type :boolV :val true}] (.. str "true")
+   _ (.. str "#<invalid-type>"))))
+
+
 (fn primerror [args]
   (case args
     [{:type :strV :val a}] (error a)
