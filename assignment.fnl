@@ -40,13 +40,13 @@
 (fn primreadint []
   (io.write "> ")
   ; tonumber returns a value or nil, 
-  (local val (tonumber (io.read)))
-  (if (= (type val) "number") val (error "QWJZ: You didn't input a number!"))
+  (let [val (tonumber (io.read))]
+  (if (not= val nil) {:type :numV :val val} (error "QWJZ: You didn't input a number!")))
   )
 
 (fn primreadstring []
-  (io.print ">")
-  (io.read))
+  (io.write "> ")
+  {:type :strV :val (io.read)})
 
 
 (fn strcat [args]
