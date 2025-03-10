@@ -14,5 +14,5 @@ brew install lua
 Afterwards, when you want to run the code in assignment.fnl, run:
 
 ```
-lua run.lua
+lua -e "require('fennel').dofile('assignment.fnl')"
 ```
