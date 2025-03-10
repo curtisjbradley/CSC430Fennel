@@ -1,3 +1,12 @@
+;; Structs
+(fn numC [n] {:type "NumC" :value n})
+(fn strC [s] {:type "StrC" :value s})
+(fn idC [id] {:type "IdC" :value id})
+(fn condC [c onTrue onFalse] {:type "CondC" :cond c :true onTrue :false onFalse})
+(fn lamC [args body] {:type "LamC" :args args :body body})
+(fn appC [fun args] {:type "AppC" :fun fun :args args})
+
+
 (fn primsub [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (- a b)}
