@@ -1,10 +1,10 @@
 ;; Structs
-(fn numC [n] {:type "NumC" :value n})
-(fn strC [s] {:type "StrC" :value s})
-(fn idC [id] {:type "IdC" :value id})
-(fn condC [c onTrue onFalse] {:type "CondC" :cond c :true onTrue :false onFalse})
-(fn lamC [args body] {:type "LamC" :args args :body body})
-(fn appC [fun args] {:type "AppC" :fun fun :args args})
+(fn numC [n] {:type :numC :value n})
+(fn strC [s] {:type :strC :value s})
+(fn idC [id] {:type :idC :value id})
+(fn condC [c onTrue onFalse] {:type :condC :cond c :onTrue onTrue :onFalse onFalse})
+(fn lamC [args body] {:type :lamC :params args :body body})
+(fn appC [fun args] {:type :appC :func fun :args args})
 
 
 (fn primsub [args]
