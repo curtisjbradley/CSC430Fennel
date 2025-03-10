@@ -1,6 +1,6 @@
 (fn primsub [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (/ a b)}
+    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (- a b)}
     _ (error "Bad input to primsub")))
 
 (fn primadd [args]
@@ -27,6 +27,7 @@
   (case args
     [{:type :numV :val a} {:type :numV :val b}] {:type :boolV :val (= a b)}
     _ (error "Bad input to primeq")))
+
 (fn primprintln [args]
   (case args
     [{:type _ :val a}] (print a)
@@ -35,6 +36,18 @@
 
 (fn primseq [args]
    (. args (length args)))
+
+(fn primreadint []
+  (io.write "> ")
+  ; tonumber returns a value or nil, 
+  (local val (tonumber (io.read)))
+  (if (= (type val) "number") val (error "QWJZ: You didn't input a number!"))
+  )
+
+(fn primreadstring []
+  (io.print ">")
+  (io.read))
+
 
 (fn strcat [args]
  (accumulate [str "" i val (ipairs args)]
@@ -61,7 +74,9 @@
    :println {:type :primV :val primprintln}
    :seq {:type :primV :val primseq}
    :++ {:type :primV :val strcat}
-   :error {:type :primV :val primerror}})
+   :error {:type :primV :val primerror}
+   :read-int {:type :primV :val primreadint}
+   :read-str {:type :primV :val primreadstring}})
 
 (fn extend-env [params args env]
   (each [index param params]
@@ -103,6 +118,9 @@
 (print (serialize (interp {:type :numC :val 2})))
 (print (serialize (interp {:type :strC :val "A"})))
 (print (serialize (interp {:type :appC :func {:type :idC :val :+} :args [{:type :numC :val 5} {:type :numC :val 3}]} top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :-} :args [{:type :numC :val 5} {:type :numC :val 3}]} top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :*} :args [{:type :numC :val 5} {:type :numC :val 3}]} top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :/} :args [{:type :numC :val 5} {:type :numC :val 3}]} top-env)))
 (print (serialize (interp {:type :condC :cond {:type :appC :func {:type :idC :val :<=} 
  :args [{:type :appC :func {:type :idC :val :+} :args [{:type :numC :val 5} {:type :numC :val 3}]} {:type :numC :val 2}]}
  :onTrue {:type :strC :val "Hello World"} :onFalse {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "This is a test using println"}]}}  top-env)))
@@ -115,3 +133,9 @@
   {:type :appC :func {:type :idC :val :println} :args [{:type :strC :val "Printing line 3"}]}
   {:type :numC :val 3.14}
  ]} top-env)))
+(print (serialize (interp {:type :condC :cond {:type :appC :func {:type :idC :val :<=} 
+ :args [{:type :appC :func {:type :idC :val :*} :args [{:type :numC :val 10} {:type :numC :val 3}]} {:type :numC :val 50}]}
+ :onTrue {:type :strC :val "Hello World"} :onFalse {:type :boolC :val false}}  top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :read-int} :args []} top-env)))
+(print (serialize (interp {:type :appC :func {:type :idC :val :read-str} :args []} top-env)))
+
