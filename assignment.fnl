@@ -21,6 +21,7 @@
     {:type :strV :val s} s
     {:type :boolV :val false} "false"
     {:type :boolV :val true}  "true" 
+    {:type :cloV :params _ :body _ :env _} "#<closure>"
     {:type :nullV} "Null Value"
     nil "Null"
     _ (error (.. "QWJZ: Bad input " val))))
