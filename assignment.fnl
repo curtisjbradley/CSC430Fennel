@@ -1,5 +1,3 @@
-
-
 ;; Structs
 (macro numC [n] {:type :numC :val n})
 (macro strC [s] {:type :strC :val s})
@@ -28,6 +26,31 @@
     {:type :nullV} "Null Value"
     nil "Null"
     _ (error (.. "QWJZ: Bad input " val))))
+
+;; Parser
+(fn parse [expr]
+  (let [num (tonumber expr)]
+     {:type :numC :val num}
+     {:type :strC :val expr}))
+
+;; Extended Parser
+(fn ext-parse [expr]
+  (if
+    ;; Nil
+    (= expr nil) (error "QWJZ: Cannot parse nil")
+
+    ;;Bool
+    (= expr true) (boolC true)
+    (= expr false) (boolC false)
+
+    ;; Null
+    (= expr :null) (nullV)
+
+    ;;parse
+    (let [num (tonumber expr)]
+      (if num
+        {:type :numC :val num}
+        {:type :strC :val expr}))))
 
 (fn primsub [args]
   (case args
@@ -147,3 +170,20 @@
   (strC "Hello World") (boolC false)) top-env)) "Hello World")
 (assert (serialize (interp (appC (idC :++)  
   [(strC "Hello ") (strC "World!") (numC 2)] top-env) top-env)) "Hello World!2")
+
+;; Parser tests
+(assert (parse "Fennel fun") (strC "Fennel fun"))
+(assert (parse "Hello World") (strC "Hello World"))
+(assert (parse 109) (numC 109))
+(assert (parse 0) (numC 0))
+
+;; Ext-Parser tests
+(assert (= (. (ext-parse 5) :type) :numC))
+(assert (= (. (ext-parse 5) :val) 5))
+(assert (= (. (ext-parse "hello") :type) :strC))
+(assert (= (. (ext-parse "hello") :val) "hello"))
+(assert (= (. (ext-parse true) :type) :boolC))
+(assert (= (. (ext-parse true) :val) true))
+(assert (= (. (ext-parse false) :type) :boolC))
+(assert (= (. (ext-parse false) :val) false))
+
