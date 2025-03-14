@@ -35,10 +35,17 @@
 ;; Extended Parser
 (fn ext-parse [expr]
   (if 
+    ;; Nil
+    (= expr nil) (error "QWJZ: Cannot parse nil")
+
     ;;Bool
     (= expr true) (boolC true)
     (= expr false) (boolC false)
-    ;;Num Str
+
+    ;; Null
+    (= expr :null) (nullV)
+
+    ;;parse
     (let [num (tonumber expr)]
       (if num
         {:type :numC :val num}
