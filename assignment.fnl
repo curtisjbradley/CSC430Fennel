@@ -16,6 +16,8 @@
 (macro primV [func] {:type :primV :val func})
 (macro nullV [] {:type :nullV})
 
+
+;;Convert values to strings
 (fn serialize [val]
   (case val
     {:type :numV :val v} (tostring v)
@@ -52,35 +54,42 @@
         {:type :numC :val num}
         {:type :strC :val expr}))))
 
+;;Primop to substitute numbers
 (fn primsub [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (numV (- a b))
     _ (error "QWJZ Bad input to primsub")))
-
+;;Primop to add numbers
 (fn primadd [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (numV (+ a b))
     _ (error "QWJZ Bad input to primadd")))
-
+;;Primop to multipy numbers
 (fn primmul [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (numV (* a b))
     _ (error "QWJZ Bad input to primmul")))
 
+;;Primop to divide numbers
 (fn primdiv [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (numV (/ a b))
     _ (error "QWJZ Bad input to primdiv")))
 
+;;Primop to check if an arg is less than or equal to the second
 (fn primleq [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (boolV (<= a b))
     _ (error "QWJZ Bad input to primleq")))
-
+;; Primop to compare args
 (fn primeq [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] (boolV (= a b))
+    [{:type :strV :val a} {:type :strV :val b}] (boolV (= a b))
+    [{:type :boolV :val a} {:type :boolV :val b}] (boolV (= a b))
     _ (error "QWJZ Bad input to primeq")))
+
+;;Primop to print a line
 
 (fn primprintln [args]
   (case args
@@ -88,8 +97,12 @@
     _ (error "QWJZ: Bad input to primprintln"))
   (nullV))
 
+;;Primop to execute a sequence and return the last result
+
 (fn primseq [args]
    (. args (length args)))
+
+;;Primop to read an integer
 
 (fn primreadint []
   (io.write "> ")
@@ -97,21 +110,25 @@
   (let [val (tonumber (io.read))]
   (if (not= val nil) (numV val) (error "QWJZ: You didn't input a number!"))))
 
+;;Primop to read a string
+
 (fn primreadstring []
   (io.write "> ")
   (strV (io.read)))
 
-
+;; Primop to concat strings
 (fn strcat [args]
  (strV (accumulate [str "" i val (ipairs args)]
   (.. str (serialize val)))))
 
-
+;; Primop to throw an error
 (fn primerror [args]
   (case args
     [{:type :strV :val a}] (error a)
     _ (error "QWJZ Bad input to primerror")))
 
+
+;;Add primops to enviornment
 (local top-env
   {:+ (primV primadd)
    :- (primV primsub)
@@ -126,14 +143,17 @@
    :read-int (primV primreadint)
    :read-str (primV primreadstring)})
 
+;; Add an Id argument pair to the enviornment
 (fn extend-env [params args env]
   (each [index param params]
     (tset env param (. args index))))
 
+;; Lookup the value of an id in the Enviornment
 (fn lookup [id env]
  (let [val (. env id)] (if (= val nil) 
   (error (.. "QWJZ: Value " id " not found in env")) val)))
 
+;; Interp ASTs
 (fn interp [expr env]
   (match expr
     {:type :numC :val v} (numV v)
@@ -154,6 +174,11 @@
         {:type :primV :val f} (f args)
         _ (error "QWJZ: Invalid closure")))
     _ (error (.. "QWJZ: Bad input. type: " (. expr :type)))))
+
+
+;; Helper function to print and interp an AST
+(fn pinterp [ast] 
+	(print (serialize (interp ast top-env))))
 
 (assert (serialize (interp (numC 2))) 2)
 (assert (serialize (interp (strC "a"))) "a")
@@ -187,3 +212,5 @@
 (assert (= (. (ext-parse false) :type) :boolC))
 (assert (= (. (ext-parse false) :val) false))
 
+
+(pinterp (appC (idC :+) [(numC 1) (numC 2)]))
