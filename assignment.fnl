@@ -32,6 +32,18 @@
      {:type :numC :val num}
      {:type :strC :val expr}))
 
+;; Extended Parser
+(fn ext-parse [expr]
+  (if 
+    ;;Bool
+    (= expr true) (boolC true)
+    (= expr false) (boolC false)
+    ;;Num Str
+    (let [num (tonumber expr)]
+      (if num
+        {:type :numC :val num}
+        {:type :strC :val expr}))))
+
 (fn primsub [args]
   (case args
     [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (- a b)}
@@ -156,3 +168,13 @@
 (assert (parse "Hello World") (strC "Hello World"))
 (assert (parse 109) (numC 109))
 (assert (parse 0) (numC 0))
+
+;; Ext-Parser tests
+(assert (= (. (ext-parse 5) :type) :numC))
+(assert (= (. (ext-parse 5) :val) 5))
+(assert (= (. (ext-parse "hello") :type) :strC))
+(assert (= (. (ext-parse "hello") :val) "hello"))
+(assert (= (. (ext-parse true) :type) :boolC))
+(assert (= (. (ext-parse true) :val) true))
+(assert (= (. (ext-parse false) :type) :boolC))
+(assert (= (. (ext-parse false) :val) false))
