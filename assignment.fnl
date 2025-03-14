@@ -1,19 +1,22 @@
+
+
 ;; Structs
-(fn numC [n] {:type :numC :val n})
-(fn strC [s] {:type :strC :val s})
-(fn boolC [c] {:type :boolC :val c})
-(fn idC [id] {:type :idC :val id})
-(fn condC [c onTrue onFalse] {:type :condC :cond c :onTrue onTrue :onFalse onFalse})
-(fn lamC [args body] {:type :lamC :params args :body body})
-(fn appC [func args] {:type :appC :func func :args args})
+(macro numC [n] {:type :numC :val n})
+(macro strC [s] {:type :strC :val s})
+(macro boolC [c] {:type :boolC :val c})
+(macro idC [id] {:type :idC :val id})
+(macro condC [c onTrue onFalse] {:type :condC :cond c :onTrue onTrue :onFalse onFalse})
+(macro lamC [args body] {:type :lamC :params args :body body})
+(macro appC [func args] {:type :appC :func func :args args})
+
 
 ;;Values
-(fn numV [n] {:type :numV :val n})
-(fn strV [s] {:type :strV :val s})
-(fn boolV [v] {:type :boolV :val v})
-(fn cloV [params body env] {:type :cloV :params params :body body :env env})
-(fn primV [func] {:type :primV :val func})
-(fn nullV [] {:type :nullV})
+(macro numV [n] {:type :numV :val n})
+(macro strV [s] {:type :strV :val s})
+(macro boolV [v] {:type :boolV :val v})
+(macro cloV [params body env] {:type :cloV :params params :body body :env env})
+(macro primV [func] {:type :primV :val func})
+(macro nullV [] {:type :nullV})
 
 (fn serialize [val]
   (case val
@@ -28,39 +31,39 @@
 
 (fn primsub [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (- a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (numV (- a b))
     _ (error "QWJZ Bad input to primsub")))
 
 (fn primadd [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (+ a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (numV (+ a b))
     _ (error "QWJZ Bad input to primadd")))
 
 (fn primmul [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (* a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (numV (* a b))
     _ (error "QWJZ Bad input to primmul")))
 
 (fn primdiv [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :numV :val (/ a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (numV (/ a b))
     _ (error "QWJZ Bad input to primdiv")))
 
 (fn primleq [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :boolV :val (<= a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (boolV (<= a b))
     _ (error "QWJZ Bad input to primleq")))
 
 (fn primeq [args]
   (case args
-    [{:type :numV :val a} {:type :numV :val b}] {:type :boolV :val (= a b)}
+    [{:type :numV :val a} {:type :numV :val b}] (boolV (= a b))
     _ (error "QWJZ Bad input to primeq")))
 
 (fn primprintln [args]
   (case args
     [{:type _ :val a}] (print a)
     _ (error "QWJZ: Bad input to primprintln"))
-  {:type :nullV})
+  (nullV))
 
 (fn primseq [args]
    (. args (length args)))
